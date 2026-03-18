@@ -1,0 +1,6 @@
+@MotAiIntel.api_HostAddress = http://localhost:5222
+
+GET {{MotAiIntel.api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
