@@ -1,5 +1,7 @@
 ﻿using MotAiIntel.api.Data;
 using MotAiIntel.api.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace MotAiIntel.api.Services
 {
@@ -16,10 +18,55 @@ namespace MotAiIntel.api.Services
             _db = db;
         }
 
-        public async Task<object> GetVehicle(string reg, int? userId)
+        public async Task<VehicleResponse> GetVehicle(string reg, int? userId)
         {
-            var motData = await _dvsa.GetMotData(reg);
+            var motJson = await _dvsa.GetMotData(reg);
 
+            var doc = JsonDocument.Parse(motJson);
+            var root = doc.RootElement;
+
+            var tests = root.GetProperty("motTests");
+
+            if (tests.GetArrayLength() == 0)
+                throw new Exception("No MOT tests found");
+
+            var latest = tests[0];
+
+            // Vehicle info
+            var vehicle = new VehicleInfo
+            {
+                Registration = root.GetProperty("registration").GetString() ?? "",
+                Make = root.GetProperty("make").GetString() ?? "",
+                Model = root.GetProperty("model").GetString() ?? "",
+                LastTestResult = latest.GetProperty("testResult").GetString(),
+                LastTestDate = latest.GetProperty("completedDate").GetString()
+            };
+
+            // Defects parsing
+            var defects = latest.GetProperty("defects");
+
+            var major = new List<string>();
+            var minor = new List<string>();
+            var advisory = new List<string>();
+
+            foreach (var d in defects.EnumerateArray())
+            {
+                var type = d.GetProperty("type").GetString();
+                var text = d.GetProperty("text").GetString();
+
+                if (type == "MAJOR") major.Add(text ?? "");
+                if (type == "MINOR") minor.Add(text ?? "");
+                if (type == "ADVISORY") advisory.Add(text ?? "");
+            }
+
+            var defectInfo = new DefectInfo
+            {
+                Major = major,
+                Minor = minor,
+                Advisory = advisory
+            };
+
+            // Get user
             User? user = null;
 
             if (userId != null)
@@ -27,22 +74,33 @@ namespace MotAiIntel.api.Services
                 user = await _db.Users.FindAsync(userId);
             }
 
-            var aiResult = await _ai.Analyse(motData, user);
+            // AI input (clean + structured)
+            var aiInput = $@"
+Vehicle: {vehicle.Make} {vehicle.Model}
+Latest result: {vehicle.LastTestResult}
+Major defects: {string.Join("; ", major)}
+Minor defects: {string.Join("; ", minor)}
+Advisories: {string.Join("; ", advisory)}
+";
 
-            var search = new SearchHistory
+            var ai = await _ai.Analyse(aiInput, user);
+
+            // Save search
+            _db.Searches.Add(new SearchHistory
             {
                 Registration = reg,
-                AiSummary = aiResult,
+                SearchedAt = DateTime.UtcNow,
+                AiSummary = ai,
                 UserId = userId
-            };
+            });
 
-            _db.Searches.Add(search);
             await _db.SaveChangesAsync();
 
-            return new
+            return new VehicleResponse
             {
-                motData,
-                ai = aiResult
+                Vehicle = vehicle,
+                Defects = defectInfo,
+                Ai = ai
             };
         }
     }

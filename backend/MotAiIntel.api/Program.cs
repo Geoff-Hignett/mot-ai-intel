@@ -60,6 +60,7 @@ builder.Services.AddAuthentication("Bearer")
 
 builder.Services.AddAuthorization();
 builder.Services.AddHttpClient<DvsaService>();
+builder.Services.AddHttpClient<AiService>();
 builder.Services.AddScoped<VehicleService>();
 builder.Services.AddScoped<AiService>();
 builder.Services.AddScoped<AuthService>();

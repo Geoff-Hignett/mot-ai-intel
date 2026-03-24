@@ -17,15 +17,19 @@ namespace MotAiIntel.api.Controllers
         [HttpGet("{reg}")]
         public async Task<IActionResult> GetVehicle(string reg)
         {
-            var userId = GetUserId();
+            var userId = GetUserIdOrNull();
+
             var result = await _service.GetVehicle(reg, userId);
+
             return Ok(result);
         }
 
-        private int? GetUserId()
+        private int? GetUserIdOrNull()
         {
             var claim = User.FindFirst("id");
-            return claim != null ? int.Parse(claim.Value) : null;
+            if (claim == null) return null;
+
+            return int.Parse(claim.Value);
         }
     }
 }
