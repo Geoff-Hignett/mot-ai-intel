@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getVehicle } from "./api/vehicle";
+import AuthForm from "./components/AuthForm";
+import Profile from "./components/Profile";
 
 export default function App() {
     const [reg, setReg] = useState("");
@@ -14,6 +16,8 @@ export default function App() {
 
     return (
         <div style={{ padding: 20 }}>
+            <AuthForm />
+            <Profile />
             <h1>MOT AI</h1>
 
             <input value={reg} onChange={(e) => setReg(e.target.value)} placeholder="Enter reg" />
