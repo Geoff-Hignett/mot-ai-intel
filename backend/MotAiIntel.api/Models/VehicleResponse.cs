@@ -4,7 +4,7 @@
     {
         public VehicleInfo Vehicle { get; set; } = new();
         public DefectInfo Defects { get; set; } = new();
-        public string Ai { get; set; } = "";
+        public AiResult Ai { get; set; } = new();
     }
 
     public class VehicleInfo

@@ -1,6 +1,5 @@
 ﻿using MotAiIntel.api.Data;
 using MotAiIntel.api.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace MotAiIntel.api.Services
@@ -90,7 +89,7 @@ Advisories: {string.Join("; ", advisory)}
             {
                 Registration = reg,
                 SearchedAt = DateTime.UtcNow,
-                AiSummary = ai,
+                AiSummary = JsonSerializer.Serialize(ai),
                 UserId = userId
             });
 

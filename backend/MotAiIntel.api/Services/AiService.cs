@@ -17,39 +17,48 @@ namespace MotAiIntel.api.Services
             _config = config;
         }
 
-        public async Task<string> Analyse(string motData, User? user)
+        public async Task<AiResult> Analyse(string motData, User? user)
         {
             var apiKey = _config["OpenAiKey"];
 
-            // 👇 Determine user state
             var isGuest = user == null;
             var hasProfile =
                 user?.YearlyMileage != null &&
                 user?.DrivingType != null &&
                 user?.MechanicalKnowledge != null;
 
-            // 👇 Guidance message
             string guidance = "";
 
             if (isGuest)
             {
-                guidance = "This recommendation can be improved if you register and provide your driving details.";
+                guidance = "Include a short note telling the user they can improve results by registering.";
             }
             else if (!hasProfile)
             {
-                guidance = "You can get more accurate recommendations by completing your profile.";
+                guidance = "Include a short note telling the user to complete their profile for better results.";
             }
 
             var prompt = $@"
-Analyse this MOT data and provide:
-- Risk level (Low/Medium/High)
-- Short explanation
-- 2 recommendations
+Analyse this MOT data and return ONLY JSON in this format:
+
+{{
+  ""risk"": ""Low|Medium|High"",
+  ""summary"": ""short explanation"",
+  ""recommendations"": [""rec1"", ""rec2""]
+}}
+
+Rules:
+- Do NOT include markdown
+- Do NOT include extra text
+- Only valid JSON
 
 User context:
 Mileage: {(user?.YearlyMileage?.ToString() ?? "Unknown")}
 Driving type: {user?.DrivingType ?? "Unknown"}
 Mechanical knowledge: {user?.MechanicalKnowledge ?? "Unknown"}
+
+Additional instruction:
+{guidance}
 
 MOT Data:
 {motData}
@@ -77,31 +86,31 @@ MOT Data:
             var response = await _http.SendAsync(request);
             var json = await response.Content.ReadAsStringAsync();
 
-            // Handle API errors cleanly
             if (!response.IsSuccessStatusCode)
             {
-                return $"OpenAI error: {json}";
+                throw new Exception($"OpenAI error: {json}");
             }
 
             using var doc = JsonDocument.Parse(json);
 
-            if (!doc.RootElement.TryGetProperty("choices", out var choices))
-            {
-                return $"Unexpected response: {json}";
-            }
-
-            var aiText = choices[0]
+            var content = doc.RootElement
+                .GetProperty("choices")[0]
                 .GetProperty("message")
                 .GetProperty("content")
-                .GetString() ?? "";
+                .GetString();
 
-            // Append guidance AFTER AI (guaranteed UX)
-            if (!string.IsNullOrWhiteSpace(guidance))
+            if (string.IsNullOrWhiteSpace(content))
+                throw new Exception("Empty AI response");
+
+            try
             {
-                aiText += $"\n\n{guidance}";
+                return JsonSerializer.Deserialize<AiResult>(content,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
             }
-
-            return aiText;
+            catch
+            {
+                throw new Exception($"Failed to parse AI JSON: {content}");
+            }
         }
     }
 }
