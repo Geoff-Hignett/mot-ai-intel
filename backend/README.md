@@ -96,9 +96,11 @@ JWT-based authentication.
 
 Returns:
 
-`{
+```id="4imw9x"
+{
   "token": "JWT_TOKEN"
-}`
+}
+```
 
 ## User Profile
 
@@ -112,11 +114,13 @@ Authorization: Bearer <token>`
 `PUT /api/user/profile
 Authorization: Bearer <token>`
 
-`{
+```id="4imw9x"
+{
   "yearlyMileage": 12000,
   "drivingType": "high",
   "mechanicalKnowledge": "medium"
-}`
+}
+```
 
 ## Vehicle Endpoint
 
@@ -128,7 +132,8 @@ Authorization: Bearer <token>`
 
 ### Example Response
 
-`{
+```id="4imw9x"
+{
   "vehicle": {
     "registration": "DU10ZNT",
     "make": "VOLKSWAGEN",
@@ -149,7 +154,8 @@ Authorization: Bearer <token>`
       "Monitor wear over time"
     ]
   }
-}`
+}
+```
 
 ## Architecture Review
 
@@ -168,10 +174,12 @@ Authorization: Bearer <token>`
 
 Use environment variables instead of appsettings:
 
-`ConnectionStrings__DefaultConnection
+```id="4imw9x"
+ConnectionStrings__DefaultConnection
 OpenAiKey
 Dvsa__ClientId
 Dvsa__ClientSecret
 Dvsa__TokenUrl
 Dvsa__Scope
-Dvsa__ApiKey`
+Dvsa__ApiKey
+```
