@@ -30,7 +30,9 @@ export default function AuthForm({ onAuth }: Props) {
 
             <input placeholder="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
 
-            <button onClick={handleRegister}>Register</button>
+            <button style={{ marginRight: 10 }} onClick={handleRegister}>
+                Register
+            </button>
             <button onClick={handleLogin}>Login</button>
         </div>
     );

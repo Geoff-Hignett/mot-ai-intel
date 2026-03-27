@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getVehicle } from "./api/vehicle";
 import { getToken, clearToken, getUserFromToken } from "./lib/auth";
+import "./App.css";
 import AuthForm from "./components/AuthForm";
 import Profile from "./components/Profile";
 import Header from "./components/Header";
@@ -25,12 +26,12 @@ export default function App() {
     };
 
     return (
-        <div>
-            {/* 🔝 HEADER */}
+        <div className="container">
+            {/* HEADER */}
             <Header email={user?.email} onLogout={handleLogout} />
 
             <div style={{ padding: 20 }}>
-                {/* 🔐 AUTH / USER AREA */}
+                {/* AUTH / USER AREA */}
                 {!token ? (
                     <div style={{ marginBottom: 20 }}>
                         <h3>Welcome</h3>
@@ -44,18 +45,18 @@ export default function App() {
                     </div>
                 )}
 
-                {/* 🔍 SEARCH */}
+                {/* SEARCH */}
                 <div style={{ marginBottom: 20 }}>
                     <input value={reg} onChange={(e) => setReg(e.target.value)} placeholder="Enter registration" style={{ marginRight: 10 }} />
 
                     <button onClick={() => setSearch(reg)}>Search</button>
                 </div>
 
-                {/* 📡 STATES */}
+                {/* STATES */}
                 {isLoading && <p>Loading...</p>}
                 {error && <p>Error loading vehicle</p>}
 
-                {/* 🚗 RESULT */}
+                {/* RESULT */}
                 {data && (
                     <div style={{ marginTop: 20 }}>
                         <h2>
