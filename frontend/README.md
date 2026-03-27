@@ -1,73 +1,61 @@
-# React + TypeScript + Vite
+# MOT AI Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend for the MOT AI application, providing:
 
-Currently, two official plugins are available:
+- Vehicle search by registration
+- AI-powered risk analysis display
+- User authentication (login/register)
+- Personalised recommendations via user profile
+- Guest mode with limited functionality
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Project Structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```id="4imw9x"
+src/
+  api/            Axios API layer (auth, user, vehicle requests)
+  components/     Reusable UI components (AuthForm, Profile, Header)
+  lib/            Utility functions (JWT handling, token storage)
+  styles/         Global styles (App.css / index.css)
+  App.tsx         Main application layout and routing logic
+  main.tsx        App entry point
 
-## Expanding the ESLint configuration
+public/           Static assets
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+vite.config.ts    Vite configuration
+tsconfig.json     TypeScript configuration
+package.json      Dependencies and scripts
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Install dependencies
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+`npm install`
+
+### Run development server
+
+`npm run dev`
+
+### Configure backend API
+
+`https://localhost:7001` (for example)
+
+## Authentication
+
+JWT-based authentication.
+
+Features:
+
+- Register / Login
+- Token stored in localStorage
+- Auto-authenticated API requests
+- UI updates based on auth state
+
+## User Experience
+
+- Guest Mode (basic)
+- Logged in user area for more personalised recommendations
+- Search vehicle by registration
+- View AI-generated risk + recommendations
