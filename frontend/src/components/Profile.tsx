@@ -1,11 +1,15 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getProfile, updateProfile } from "../api/user";
 import { useState, useEffect } from "react";
+import { getToken } from "../lib/auth";
 
 export default function Profile() {
+    const token = getToken();
+
     const { data, isLoading } = useQuery({
         queryKey: ["profile"],
         queryFn: getProfile,
+        enabled: !!token,
     });
 
     const mutation = useMutation({

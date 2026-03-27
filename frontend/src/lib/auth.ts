@@ -9,3 +9,15 @@ export const getToken = () => {
 export const clearToken = () => {
     localStorage.removeItem("token");
 };
+
+export const getUserFromToken = () => {
+    const token = getToken();
+    if (!token) return null;
+
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload;
+    } catch {
+        return null;
+    }
+};

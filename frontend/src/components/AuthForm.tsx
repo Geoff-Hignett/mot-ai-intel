@@ -2,20 +2,24 @@ import { useState } from "react";
 import { login, register } from "../api/auth";
 import { setToken } from "../lib/auth";
 
-export default function AuthForm() {
+type Props = {
+    onAuth: (token: string) => void;
+};
+
+export default function AuthForm({ onAuth }: Props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const handleRegister = async () => {
         const res = await register(email, password);
         setToken(res.token);
-        alert("Registered + logged in");
+        onAuth(res.token);
     };
 
     const handleLogin = async () => {
         const res = await login(email, password);
         setToken(res.token);
-        alert("Logged in");
+        onAuth(res.token);
     };
 
     return (
