@@ -1,8 +1,13 @@
-﻿namespace MotAiIntel.api.Models
+﻿using System.Text.Json.Serialization;
+
+namespace MotAiIntel.api.Models
 {
     public class DvsaTokenResponse
     {
-        public string access_token { get; set; } = "";
-        public int expires_in { get; set; }
+        [JsonPropertyName("access_token")]
+        public string AccessToken { get; set; } = "";
+
+        [JsonPropertyName("expires_in")]
+        public int ExpiresIn { get; set; }
     }
 }
